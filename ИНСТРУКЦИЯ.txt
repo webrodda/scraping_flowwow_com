@@ -11,6 +11,7 @@
 - pip install selenium
 - pip install pymysql
 - pip install BeautifulSoup4
+- pip install lxml
 
 2. Ввести корректные данные в файле config.py. В этом файле определяются настройки базы данных, в которую будут
    загружены готовые данные. Переменные соответствуют следующим значениям:

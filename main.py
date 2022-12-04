@@ -1,5 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
 from bs4 import BeautifulSoup
 from database import input_data_to_table
 import json
@@ -13,22 +15,28 @@ options = webdriver.ChromeOptions()
 options.add_argument(f"user-agent={ua}")
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_argument("--headless")
-timeout = 60
+timeout = 300
 
 
 def get_product_ids():
     browser = webdriver.Chrome(options=options)
     browser.set_page_load_timeout(time_to_wait=timeout)
+    wait = WebDriverWait(browser, 200)
     try:
         url = "https://flowwow.com/shop/flower-bag/"
         browser.get(url=url)
         time.sleep(2)
+        wait.until(ec.visibility_of_element_located((By.CLASS_NAME, "store_readmore")))
         read_more_buttons = browser.find_elements(By.LINK_TEXT, "Показать ещё")
         for read_more_button in read_more_buttons:
+            wait.until(ec.element_to_be_clickable((By.CLASS_NAME, "store_readmore")))
+            browser.execute_script("arguments[0].scrollIntoView();", read_more_button)
             browser.execute_script("arguments[0].click();", read_more_button)
             time.sleep(1)
-        browser.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        last_block = browser.find_elements(By.TAG_NAME, "div")[-1]
+        browser.execute_script("arguments[0].scrollIntoView();", last_block)
         time.sleep(2)
+        wait.until(ec.visibility_of_element_located((By.CLASS_NAME, "store_readmore")))
         response = browser.page_source
         bs_object = BeautifulSoup(response, "lxml")
         products = bs_object.find_all(name="a", class_=re.compile(r"shop-product js-product-popu\w*"))
@@ -131,7 +139,7 @@ def create_csv_file():
 
 def parsing():
     print("[INFO] Программа запущена")
-    print("[INFO] Идет сбор информации из магазина Flower Bag. Это займет не более 2 минут")
+    print("[INFO] Идет сбор информации из магазина Flower Bag. Это займет не более 5 минут")
     start_time = time.time()
     create_csv_file()
     product_ids = get_product_ids()
