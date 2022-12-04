@@ -1,7 +1,7 @@
 import pymysql
 from pymysql import cursors
 from config import username, password, db_name, port, host, table, fields
-import csv
+import openpyxl
 
 
 def database(query):
@@ -21,13 +21,18 @@ def database(query):
 
 
 def input_data_to_table():
-    with open("result.csv", "r", encoding="utf-8") as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            query = f"""INSERT INTO {table} ({fields}) 
-            VALUES ("{row['Название']}", "{row['Полная цена']}", "{row['Цена со скидкой']}", "{row['Описание']}", 
-            "{row['Состав']}", "{row['Размер']}", "{row['Ссылки на фотографии']}");"""
-            database(query=query)
+    workbook = openpyxl.load_workbook("result.xlsx")
+    worksheet = workbook.active
+    result = list()
+    for index_row in range(1, worksheet.max_row):
+        sub_result = list()
+        for column in worksheet.iter_cols(1, worksheet.max_column):
+            sub_result.append(column[index_row].value)
+        result.append(sub_result)
+    for record in result:
+        query = f"""INSERT INTO {table} ({fields}) 
+        VALUES ({record[0]}, "{record[1]}", {record[2]}, "{record[3]}", "{record[4]}", "{record[5]}");"""
+        database(query=query)
     print("[INFO] Данные успешно записаны в базу данных")
 
 
