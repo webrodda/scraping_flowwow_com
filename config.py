@@ -1,5 +1,5 @@
-username = "root"
-password = "qnet20400"
+username = "username"
+password = "password"
 db_name = "test"
 host = "127.0.0.1"
 port = 3306
