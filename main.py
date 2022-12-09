@@ -5,7 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from bs4 import BeautifulSoup
-from database import input_data_to_table
+from database import create_sql_query, clean_photo
 import os
 import shutil
 import pathlib
@@ -323,7 +323,8 @@ def main():
             workbook.save("result.xlsx")
             break
         elif mode == "3":
-            input_data_to_table()
+            clean_photo()
+            create_sql_query()
             break
         else:
             print("[ERROR] Прости, похоже ты ввел не ту команду. Попробуй еще раз")
