@@ -56,7 +56,7 @@ def create_sql_query():
 
     # select oc_product
     oc_product_query = " ".join(["INSERT INTO oc_product (`product_id`, `quantity`,",
-                                 "`stock_status_id`, `image`, `shipping`, `price`, `status`) VALUES\n"])
+                                 "`stock_status_id`, `image`, `shipping`, `price`, `status`, `model`) VALUES\n"])
     values_queries = list()
     for index in range(2, oc_product.max_row + 1):
         status = 1
@@ -66,8 +66,9 @@ def create_sql_query():
         image = oc_product[f"D{index}"].value
         shipping = oc_product[f"E{index}"].value
         price = oc_product[f"F{index}"].value
-        values_query = f"""({product_id}, {quantity}, {stock_status_id}, "{image}", {shipping}, {price}, {status})"""
-        values_queries.append(values_query)
+        model = oc_product[f"G{index}"].value
+        values = f"""({product_id}, {quantity}, {stock_status_id}, "{image}", {shipping}, {price}, {status}, {model})"""
+        values_queries.append(values)
     values_queries = ",\n".join(values_queries)
     oc_product_query = f"{oc_product_query}{values_queries};"
     
@@ -109,7 +110,7 @@ def create_sql_query():
     values_queries = list()
     for index in range(2, oc_product_to_category.max_row + 1):
         product_id = get_clean_value(workbook=workbook, formula=oc_product_to_category[f"A{index}"].value)
-        category_id_list = oc_product_to_category[f"B{index}"].value.strip().split(" ")
+        category_id_list = str(oc_product_to_category[f"B{index}"].value).strip().split(" ")
         for category_id in category_id_list:
             values_query = f"({product_id}, {category_id})"
             values_queries.append(values_query)

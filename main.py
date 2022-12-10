@@ -51,6 +51,7 @@ def new_excel():
     oc_product["D1"] = "image"
     oc_product["E1"] = "shipping"
     oc_product["F1"] = "price"
+    oc_product["G1"] = "model"
 
     # oc_product_description page
     oc_product_description["A1"] = "product_id"
