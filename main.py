@@ -70,6 +70,7 @@ def new_excel():
     # oc_product_to_category page
     oc_product_to_category["A1"] = "product_id"
     oc_product_to_category["B1"] = "category_id"
+    oc_product_to_category["C1"] = "product_name"
 
     # oc_seo_url page
     oc_seo_url["A1"] = "seo_url_id"
@@ -88,6 +89,7 @@ def write_data(data, index, mode):
     global index_photo
 
     oc_product[f"C{index}"] = 8
+    oc_product[f"D{index}"] = data["photos"][0]["correct_url"]
     oc_product[f"E{index}"] = 1
     oc_product[f"F{index}"] = data["full_price"]
 
@@ -107,6 +109,7 @@ def write_data(data, index, mode):
             oc_product_image[f"E{index_photo}"] = 'Данные были собраны в режиме "Без Фото"'
 
     oc_product_to_category[f"A{index}"] = f"=oc_product!A{index}"
+    oc_product_to_category[f"C{index}"] = data["title"]
 
     oc_seo_url[f"B{index}"] = 0
     oc_seo_url[f"C{index}"] = 2

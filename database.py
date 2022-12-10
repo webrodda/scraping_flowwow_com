@@ -56,20 +56,21 @@ def create_sql_query():
 
     # select oc_product
     oc_product_query = " ".join(["INSERT INTO oc_product (`product_id`, `quantity`,",
-                                 "`stock_status_id`, `image`, `shipping`, `price`) VALUES\n"])
+                                 "`stock_status_id`, `image`, `shipping`, `price`, `status`) VALUES\n"])
     values_queries = list()
     for index in range(2, oc_product.max_row + 1):
+        status = 1
         product_id = oc_product[f"A{index}"].value
         quantity = oc_product[f"B{index}"].value
         stock_status_id = oc_product[f"C{index}"].value
         image = oc_product[f"D{index}"].value
         shipping = oc_product[f"E{index}"].value
         price = oc_product[f"F{index}"].value
-        values_query = f"""({product_id}, {quantity}, {stock_status_id}, "{image}", {shipping}, {price})"""
+        values_query = f"""({product_id}, {quantity}, {stock_status_id}, "{image}", {shipping}, {price}, {status})"""
         values_queries.append(values_query)
     values_queries = ",\n".join(values_queries)
     oc_product_query = f"{oc_product_query}{values_queries};"
-
+    
     # select oc_product_description
     oc_product_description_query = " ".join(["INSERT INTO oc_product_description",
                                              "(`product_id`, `language_id`, `name`, `description`,",
@@ -108,9 +109,10 @@ def create_sql_query():
     values_queries = list()
     for index in range(2, oc_product_to_category.max_row + 1):
         product_id = get_clean_value(workbook=workbook, formula=oc_product_to_category[f"A{index}"].value)
-        category_id = oc_product_to_category[f"B{index}"].value
-        values_query = f"({product_id}, {category_id})"
-        values_queries.append(values_query)
+        category_id_list = oc_product_to_category[f"B{index}"].value.strip().split(" ")
+        for category_id in category_id_list:
+            values_query = f"({product_id}, {category_id})"
+            values_queries.append(values_query)
     values_queries = ",\n".join(values_queries)
     oc_product_to_category_query = f"{oc_product_to_category_query}{values_queries};"
 
@@ -127,13 +129,25 @@ def create_sql_query():
         values_queries.append(values_query)
     values_queries = ",\n".join(values_queries)
     oc_seo_url_query = f"{oc_seo_url_query}{values_queries};"
+    
+    # select oc_product_to_store
+    values_queries = list()
+    oc_product_to_store_query = "INSERT INTO oc_product_to_store (product_id, store_id) VALUES\n"
+    for index in range(2, oc_product.max_row + 1):
+        product_id = oc_product[f"A{index}"].value
+        store_id = 0
+        values_query = f"({product_id}, {store_id})"
+        values_queries.append(values_query)
+    values_queries = ",\n".join(values_queries)
+    oc_product_to_store_query = f"{oc_product_to_store_query}{values_queries};"
 
     result = "\n".join([f"USE {db_name};", oc_product_query, oc_product_description_query,
-                        oc_product_image_query, oc_product_to_category_query, oc_seo_url_query])
+                        oc_product_image_query, oc_product_to_category_query, oc_seo_url_query,
+                        oc_product_to_store_query])
     with open("sql.txt", "w", encoding="utf-8") as file:
         file.write(result)
     print("[INFO] SQL-запрос успешно сгенерирован и сохранен в файле sql.txt")
 
 
 if __name__ == "__main__":
-    clean_photo()
+    create_sql_query()
