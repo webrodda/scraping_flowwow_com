@@ -51,7 +51,8 @@ def new_excel():
     oc_product["D1"] = "image"
     oc_product["E1"] = "shipping"
     oc_product["F1"] = "price"
-    oc_product["G1"] = "model"
+    oc_product["G1"] = "purchase price"
+    oc_product["H1"] = "model"
 
     # oc_product_description page
     oc_product_description["A1"] = "product_id"
@@ -93,6 +94,7 @@ def write_data(data, index, mode):
     oc_product[f"D{index}"] = data["photos"][0]["correct_url"]
     oc_product[f"E{index}"] = 1
     oc_product[f"F{index}"] = data["full_price"]
+    oc_product[f"G{index}"] = data["purchase_price"]
 
     oc_product_description[f"A{index}"] = f"=oc_product!A{index}"
     oc_product_description[f"B{index}"] = 2
@@ -220,7 +222,7 @@ def get_data(product_ids, mode):
                 full_price = json_object["base"]
             else:
                 full_price = json_object["cost"]
-
+            purchase_price = json_object["cost"]
             full_info = json_object["fullInfo"]
             full_info = full_info.replace("\n", "").replace("\\", "")
             bs_object = BeautifulSoup(full_info, "lxml")
@@ -279,7 +281,7 @@ def get_data(product_ids, mode):
                     result_photo = get_photo_data(title=title, index=index, mode="only_text")
                     result_photos.append(result_photo)
                 photos = result_photos
-            result = {"title": title, "full_price": full_price,
+            result = {"title": title, "full_price": full_price, "purchase_price": purchase_price,
                       "description": description, "seo_url": seo_url, "photos": photos}
 
             write_data(data=result, index=index_field, mode=mode)

@@ -66,7 +66,7 @@ def create_sql_query():
         image = oc_product[f"D{index}"].value
         shipping = oc_product[f"E{index}"].value
         price = oc_product[f"F{index}"].value
-        model = oc_product[f"G{index}"].value
+        model = oc_product[f"H{index}"].value
         values = f"""({product_id}, {quantity}, {stock_status_id}, "{image}", {shipping}, {price}, {status}, {model})"""
         values_queries.append(values)
     values_queries = ",\n".join(values_queries)
